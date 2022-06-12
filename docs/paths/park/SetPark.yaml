@@ -1,0 +1,53 @@
+paths:
+  /parking/set:
+    post:
+      tags:
+        - Parking
+      summary: Set the Parking Area
+      description: |
+        Set the Parking Area
+      security:
+        - CookieAuth: []
+      requestBody:
+        description: The data needed to create an transaction entry.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entryPoints:
+                  description: Number of entrances, min of 3
+                  type: number
+                  example: 3
+                map:
+                  description: The parking area map
+                  type: array
+                  items:
+                    type: array
+                    items:
+                      type: number
+                slotSizes:
+                  type: array
+                  items:
+                    type: number
+      responses:
+        201:
+          description: Parking Area successfully set.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Parking Area successfully set.
+                      
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+        500:
+          $ref: '#/components/responses/InternalServerError'

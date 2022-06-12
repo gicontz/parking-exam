@@ -1,0 +1,57 @@
+paths:
+  /parking/unpark:
+    put:
+      tags:
+        - Parking
+      summary: Unpark Vehicle
+      description: |
+        Unpark Vehicle
+      security:
+        - CookieAuth: []
+      parameters:
+        - in: query
+          name: plateNumber
+          schema:
+            type: string
+            required: true
+        - in: query
+          name: currentDate
+          schema:
+            type: string
+            required: true
+
+      responses:
+        201:
+          description: Ruleset successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plateNumber:
+                    description: Vehicle Identity
+                    type: string
+                    example: 3
+                  size:
+                    description: Vehicle Size
+                    type: integer
+                    example: 0
+                  slot:
+                    description: The slot number
+                    type: integer
+                    example: 0
+                  unparkDateTime:
+                    description: Date and Time the vehicle exited
+                    type: integer
+                  price:
+                    description: Price to pay in PHP
+                    type: integer
+                      
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/ConflictError'
+        500:
+          $ref: '#/components/responses/InternalServerError'

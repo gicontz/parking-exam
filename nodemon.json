@@ -1,0 +1,13 @@
+{
+  "watch": [
+    ".",
+    ".env"
+  ],
+  "ignore": [
+    ".git",
+    "node_modules/",
+    "build/"
+  ],
+  "ext": "js jsx ts tsx yaml",
+  "exec": "ts-node -r tsconfig-paths/register --files"
+}

@@ -1,0 +1,6 @@
+# Ignore all applicable files by default
+**/*.*
+
+# Lint all source files
+!src/**/*.*
+!__tests__/**/*.*

@@ -1,0 +1,14 @@
+components:
+  responses:
+    BadRequestError:
+      description: Bad request
+    UnauthorizedError:
+      description: Unauthorized
+    ForbiddenError:
+      description: Forbidden
+    NotFoundError:
+      description: Not found
+    ConflictError:
+      description: Conflict
+    InternalServerError:
+      description: Internal server error

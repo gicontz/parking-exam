@@ -1,0 +1,21 @@
+components:
+  responses:
+    GenericResponse:
+      description: Generic response
+      content:
+        application/json:
+        schema:
+          type: object
+          properties:
+            result:
+              type: string
+              description: Result of the operation.
+            statusCode:
+              type: integer
+              description: Status code for this response. Helpful for custom status codes.
+            message:
+              type: string
+              description: Short description for this response.
+            data:
+              type: object
+              description: Additional data for this response.

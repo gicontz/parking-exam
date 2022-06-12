@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build",
+    "rootDir": "src",
+    "downlevelIteration": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "newLine": "lf",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "ES6",
+    "types": ["node", "reflect-metadata"],
+    "paths": {
+      "@requests/*": ["./src/requests/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@errors/*": ["./src/errors/*"],
+      "@models/*": ["./src/database/mongoose/models/*"],
+      "@daos/*": ["./src/database/mongoose/daos/*"],
+      "@database/*": ["./src/database/mongoose/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@config/*": ["./src/config/*"],
+      "@apis/*": ["./src/apis/*"],
+      "@app/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "./src"
+  ]
+}
