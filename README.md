@@ -9,10 +9,6 @@ yarn
 cp .env.sample .env
 ```
 
-- start Mongo
-```
-mongod
-```
 - start app
 ```
 yarn start
