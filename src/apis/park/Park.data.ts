@@ -13,6 +13,7 @@ export type TSize = 0 | 1 | 2;
 export type TPark = {
   plateNumber: string;
   size: TSize;
+  currentDate: Date;
 };
 
 export type TUnpark = {

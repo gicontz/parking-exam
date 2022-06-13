@@ -19,9 +19,11 @@ export default class ParkService implements IParkService {
     this.parkingRecords = [];
   };
 
+  private getDiffHours = (d1: Date, d2: Date) => Math.ceil((d1.getTime() - d2.getTime())/3600000)
+
   private calculateCharges = (data: Required<TParkingRecord>) => {
     const { parkDateTime, unparkDateTime, size } = data;
-    const hours = Math.ceil((unparkDateTime.getTime() - parkDateTime.getTime())/3600000);
+    const hours = this.getDiffHours(unparkDateTime, parkDateTime);
     const floatDays = hours / 24;
     if (floatDays > 1) {
       const extraHrs = Math.ceil((floatDays - Math.floor(floatDays)) * 24);
@@ -33,14 +35,41 @@ export default class ParkService implements IParkService {
   }
   
   public park = (data: TPark) => {
-    const { plateNumber, size } = data;
+    const { plateNumber, size, currentDate } = data;
+    const parkInfo = this.parkingRecords.find(({ plateNumber: p }) => p === plateNumber);
+    const parkInfoIndex = this.parkingRecords.findIndex(({ plateNumber: p }) => p === plateNumber);
+    let properParkDateTime = currentDate;
     
-    if (this.parkingRecords.find(({ plateNumber: p }) => p === plateNumber))
-      throw new Error('Existing Vehicle with the same plate number already parked here, please report to LTO.');
+    if (parkInfo) {
+      if ('unparkDateTime' in parkInfo == false) {
+        throw new Error('Vehicle does not leave this parking complex yet');
+      }
+
+      if (currentDate.getTime() < (parkInfo.unparkDateTime as Date).getTime()) {
+        throw new Error('Current Date should be in the future');
+      }
+      
+      // if Car went back and still available
+      if (!this.parkingArea.occupancy.includes(parkInfo.slot)) {
+        if (parkInfo.unparkDateTime && this.getDiffHours(currentDate, parkInfo.unparkDateTime) == 1) {
+          delete parkInfo.unparkDateTime;
+          return {
+            ...parkInfo,
+          };
+        } else {
+          // Remove if the car went back beyond an hour - to procee on new parking record
+          this.parkingRecords.splice(parkInfoIndex, 1);
+        }
+      } else {
+        // If no longer available, prepare it's original parking DateTime
+        properParkDateTime = parkInfo.parkDateTime;
+      }
+    }
     /** Park vehicle if there is an available slot */
     if (!this.parkingArea.slotSizes.includes(size)) {
         throw new Error('Sorry, no available Parking Slot for the size of your vehicle.');
     }
+
     if (this.parkingArea.occupancy.length === 0 || this.parkingArea.occupancy.length < this.parkingArea.slotSizes.length) {
       const suitableSlots = this.parkingArea.map.map((c,i) => {
         const available = !(this.parkingArea.occupancy?.includes(i));
@@ -76,10 +105,22 @@ export default class ParkService implements IParkService {
           plateNumber,
           size: this.parkingArea.slotSizes[nearestAvailableSlot],
           slot: nearestAvailableSlot,
-          parkDateTime: new Date(),
+          parkDateTime: properParkDateTime,
         };
   
-        this.parkingRecords.push(parkSlot);
+        if (!parkInfo) {
+          this.parkingRecords.push(parkSlot);
+        } else {
+          this.parkingRecords = update(this.parkingRecords, {
+            [parkInfoIndex]: {
+              $merge: {
+                slot: nearestAvailableSlot,
+                parkDateTime: properParkDateTime,
+                size: this.parkingArea.slotSizes[nearestAvailableSlot],
+              }
+            }
+          })
+        }
   
         this.parkingArea.occupancy.push(nearestAvailableSlot);
         return parkSlot;
@@ -96,9 +137,13 @@ export default class ParkService implements IParkService {
       const indx = this.parkingRecords.findIndex(({ plateNumber: pN }) => pN === plateNumber);
       const occindx = this.parkingArea.occupancy.findIndex((occ) => occ === parkingRecord.slot);
       this.parkingArea.occupancy.splice(occindx, 1);
-      
+
+      this.parkingRecords = update(this.parkingRecords, {
+        [indx]: { $merge: { unparkDateTime } },
+      });
+
       return {
-        ...this.parkingRecords.splice(indx, 1)[0],
+        ...parkingRecord,
         unparkDateTime,
         price
       }

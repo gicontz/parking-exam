@@ -37,14 +37,16 @@ export default class ParkValidator implements IParkValidator {
     const querySchema = Joi.object().keys({
       plateNumber: Joi.string().required(),
       size: Joi.number().allow(...[0,1,2]),
+      currentDate: Joi.date().required(),
     });
 
     try {
-      const { plateNumber, size } = await querySchema.validateAsync(req.query);
+      const { plateNumber, size, currentDate } = await querySchema.validateAsync(req.query);
 
       (req as IValidatedRequest<TPark>).validatedData = {
         plateNumber,
         size,
+        currentDate: new Date(currentDate),
       };
 
       next();
